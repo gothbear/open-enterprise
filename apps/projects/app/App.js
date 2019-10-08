@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { ApolloProvider } from 'react-apollo'
 
 import { useAragonApi } from './api-react'
@@ -18,20 +18,13 @@ import IssueDetail from './components/Content/IssueDetail'
 import { PanelManager, PanelContext, usePanelManagement } from './components/Panel'
 
 import { IdentityProvider } from '../../../shared/identity'
-import {
-  REQUESTED_GITHUB_TOKEN_SUCCESS,
-  REQUESTED_GITHUB_TOKEN_FAILURE,
-} from './store/eventTypes'
 
 import { initApolloClient } from './utils/apollo-client'
-import { getToken, githubPopup, STATUS } from './utils/github'
+import { STATUS } from './utils/github'
 import Unauthorized from './components/Content/Unauthorized'
-import { LoadingAnimation } from './components/Shared'
-import { EmptyWrapper } from './components/Shared'
 import { Error } from './components/Card'
 import { DecoratedReposProvider } from './context/DecoratedRepos'
-
-let popupRef = null
+import GithubSignin from './GithubSignin'
 
 const App = () => {
   const { api, appState } = useAragonApi()
@@ -54,43 +47,6 @@ const App = () => {
 
   const client = github.token ? initApolloClient(github.token) : null
 
-  const handlePopupMessage = useCallback(async message => {
-    if (!popupRef) return
-    if (message.source !== popupRef) return
-
-    switch (message.data.name) {
-    case 'code':
-      try {
-        const token = await getToken(message.data.code)
-        setGithubLoading(false)
-        api.emitTrigger(REQUESTED_GITHUB_TOKEN_SUCCESS, {
-          status: STATUS.AUTHENTICATED,
-          token
-        })
-
-      } catch (err) {
-        setGithubLoading(false)
-        api.emitTrigger(REQUESTED_GITHUB_TOKEN_FAILURE, {
-          status: STATUS.FAILED,
-          token: null,
-        })
-      }
-      break
-    case 'ping':
-      // The popup cannot read `window.opener.location` directly because of
-      // same-origin policies. Instead, it pings this page, this page pings
-      // back, and the location info can be read from that ping.
-      popupRef.postMessage({ name: 'ping' }, '*')
-    }
-  }, [])
-
-  useEffect(() => {
-    window.addEventListener('message', handlePopupMessage)
-    return () => {
-      window.removeEventListener('message', handlePopupMessage)
-    }
-  })
-
   const changeActiveIndex = data => {
     setActiveIndex(data)
   }
@@ -107,7 +63,6 @@ const App = () => {
 
   const handleGithubSignIn = () => {
     setGithubLoading(true)
-    popupRef = githubPopup(popupRef)
   }
 
   const handleSelect = index => {
@@ -127,9 +82,7 @@ const App = () => {
   const noop = () => {}
   if (githubLoading) {
     return (
-      <EmptyWrapper>
-        <LoadingAnimation />
-      </EmptyWrapper>
+      <GithubSignin setGithubLoading={setGithubLoading} />
     )
   } else if (github.status === STATUS.INITIAL) {
     return (
