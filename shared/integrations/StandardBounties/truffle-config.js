@@ -25,15 +25,13 @@ module.exports = {
       host: 'localhost',
       port: 8545,
       network_id: '*',
-      gas: 8.2e6,
+      gas: 8e6,
       gasPrice: 2000000000, // same as latest on Mainnet https://ethstats.net/
     },
     coverage: {
       host: 'localhost',
-      network_id: '*',
+      network_id: 16,
       port: 8555,
-      gas: 0xfffffffffff,
-      gasPrice: 0x01,
     },
     live: {
       network_id: 1, // Ethereum public network,
