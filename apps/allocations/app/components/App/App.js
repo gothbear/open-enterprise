@@ -1,14 +1,17 @@
 import React from 'react'
-import { useAragonApi } from '../../api-react'
+import { useAragonApi, usePath } from '../../api-react'
 import { Main, SidePanel, SyncIndicator } from '@aragon/ui'
 
 import { IdentityProvider } from '../LocalIdentityBadge/IdentityManager'
-import { Overview } from '.'
+import { BudgetDetail, Overview } from '.'
 import { usePanel } from '../../context/Panel'
+
+const BUDGETS_REGEX = new RegExp('^/budgets/')
 
 const App = () => {
   const { api, appState } = useAragonApi()
   const { isSyncing = true } = appState
+  const [path] = usePath()
 
   const { panel, panelOpen, setPanel } = usePanel()
 
@@ -32,7 +35,8 @@ const App = () => {
         onResolve={handleResolveLocalIdentity}
         onShowLocalIdentityModal={handleShowLocalIdentityModal}
       >
-        <Overview />
+        {path === '/' && <Overview />}
+        {path.match(BUDGETS_REGEX) && <BudgetDetail />}
         <SyncIndicator visible={isSyncing} />
         <SidePanel
           title={(panel && panel.data.heading) || ''}
