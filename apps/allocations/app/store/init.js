@@ -1,4 +1,5 @@
 import {
+  app,
   getEthToken,
   getNetwork,
   getVault,
@@ -8,7 +9,16 @@ import {
 import allocationsEventHandler from './events'
 
 const initState = settings => async cachedState => {
-  return await initializeTokens(cachedState, settings)
+  const tokens = await initializeTokens(cachedState, settings)
+  //I'm unable to call 'periodDuration' even though its a public variable.
+  //The following ridiculous bit of code is my roundabout way of getting that value
+  const periodId = await app.call('getCurrentPeriodId').toPromise()
+  const { startTime, endTime } = await app.call('getPeriod', periodId).toPromise()
+  const period = endTime - startTime + 1 //Off by one second
+  return {
+    period,
+    ...tokens
+  }
 }
 
 const initialize = async () => {

@@ -5,6 +5,7 @@ import {
   DropDown,
   Field,
   Info,
+  Text,
   TextInput,
   useTheme
 } from '@aragon/ui'
@@ -28,9 +29,11 @@ const INITIAL_STATE = {
 
 class NewBudget extends React.Component {
   static propTypes = {
+    period: PropTypes.number.isRequired,
     saveBudget: PropTypes.func.isRequired,
     editingBudget: PropTypes.object,
     tokens: PropTypes.array,
+    theme: PropTypes.object.isRequired,
   }
 
   static defaultProps = {
@@ -94,11 +97,15 @@ class NewBudget extends React.Component {
         disabled={name === '' || amount === '' || nameError || amountError}
         errors={
           <ErrorContainer>
-            { this.props.editingBudget.id && (
+            { this.props.editingBudget.id ? (
               <Info>
                 Please keep in mind that any changes to the budget amount may only be effectuated upon the starting date of the next accounting period.
               </Info>
-            ) }
+            ) : (
+              <Info>
+                Budgets represent a spending limit that is imposed upon an allocation category for the accounting period. Budgets do not hold any actual funds.
+              </Info>
+            )}
           </ErrorContainer>
         }
       >
@@ -138,12 +145,35 @@ class NewBudget extends React.Component {
                 onChange={this.handleSelectToken}
               />
             )}
-
+            <Text
+              css={`
+                white-space: nowrap;
+                line-height: 40px;
+                padding-left: 16px;
+                font-size: 16px;
+                color: ${this.props.theme.contentSecondary};
+              `}
+            >
+              every {timeString(this.props.period)}
+            </Text>
           </InputGroup>
         </Field>
       </Form>
     )
   }
+}
+
+const timeString = seconds => {
+  const days = seconds/86400
+  if(days%365 === 0){
+    const years = days/365
+    return `${years === 1 ? 'year' : `${years} years`}`
+  }
+  if(days%7 === 0){
+    const weeks = days/7
+    return `${weeks === 1 ? 'week' : `${weeks} weeks`}`
+  }
+  return `${days === 1 ? 'day' : `${days} days`}`
 }
 
 const NewBudgetWrap = props => {

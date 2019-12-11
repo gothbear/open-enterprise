@@ -11,7 +11,7 @@ import { usePanel } from '../../context/Panel'
 
 const Budgets = () => {
   const { api, appState } = useAragonApi()
-  const { budgets = [] } = appState
+  const { budgets = [], period = 2592000  } = appState
   const [ isModalVisible, setModalVisible ] = useState(false)
   const [ currentBudgetId, setCurrentBudgetId ] = useState('')
   const { setPanel } = usePanel()
@@ -71,6 +71,7 @@ const Budgets = () => {
       content: NewBudget,
       data: {
         heading: 'Edit budget',
+        period,
         saveBudget,
         editingBudget,
       },

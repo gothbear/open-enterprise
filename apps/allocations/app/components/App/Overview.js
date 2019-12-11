@@ -10,7 +10,7 @@ import { usePanel } from '../../context/Panel'
 
 const Overview = () => {
   const { api, appState } = useAragonApi()
-  const { allocations = [], budgets = [], isSyncing = true } = appState
+  const { allocations = [], budgets = [], period = 2592000, isSyncing = true } = appState
   const { setPanel } = usePanel()
 
   const saveBudget = ({ amount, name, token }) => {
@@ -28,7 +28,7 @@ const Overview = () => {
   const onNewBudget = () => {
     setPanel({
       content: NewBudget,
-      data: { heading: 'New budget', saveBudget },
+      data: { heading: 'New budget', period, saveBudget },
     })
   }
 
