@@ -71,13 +71,11 @@ const Budget = ({
       }
     >
       {amount > 0 && (
-        <React.Fragment>
-          <StatsValueBig css={{ paddingTop: '24px' }} theme={theme}>
-            <ProgressBar
-              color={String(theme.accentEnd)}
-              value={tokensSpent.div(amount).toNumber()}
-            />
-          </StatsValueBig>
+        <StatsValueProgress>
+          <ProgressBar
+            color={String(theme.accentEnd)}
+            value={tokensSpent.div(amount).toNumber()}
+          />
           <StatsValueSmall css={{
             color: theme.content,
             paddingTop: '8px',
@@ -85,7 +83,7 @@ const Budget = ({
             {displayCurrency(tokensSpent)}
             <Text>{' ' + token.symbol + ' utilized'}</Text>
           </StatsValueSmall>
-        </React.Fragment>
+        </StatsValueProgress>
       )}
     </Wrapper>
   )
@@ -200,10 +198,9 @@ const CardTitle = styled(Text.Block).attrs({
   size: 'large',
   weight: 'bold',
 })`
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 400;
-  margin-top: 10px;
-  margin-bottom: 5px;
+  margin: 20px 12px;
   text-align: center;
   color: ${({ theme }) => theme.content};
   display: block;
@@ -221,12 +218,21 @@ const StatsContainer = styled.div`
   flex-grow: 1;
   justify-content: center;
   align-content: stretch;
+  width: 100%;
+  padding: 12px;
 `
 
 const StyledStats = styled.div`
   display: inline-block;
   text-align: center;
-  flex-grow: 1;
+  width: 100%;
+  position: relative;
+`
+
+const StatsValueProgress = styled.div`
+  position: absolute;
+  bottom: 36px;
+  width: 100%;
 `
 
 const StatsValueBig = styled.div`
