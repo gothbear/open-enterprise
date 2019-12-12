@@ -1,4 +1,4 @@
-# Open Enterprise
+# Open Enterprise ..
 
 _Note: Open Enterprise is the new name of That Planning Suite._
 
